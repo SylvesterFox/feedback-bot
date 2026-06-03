@@ -9,10 +9,10 @@ public class FeedbackBotContextFactory : IDesignTimeDbContextFactory<FeedbackBot
         DbContextOptionsBuilder<FeedbackBotContext> builder = new();
         string connectionString = args.Length != 0
             ? string.Join(' ', args)
-            : @"User ID=postgres;Password=postgres;Host=localhost;Port=5432;";
+            : @"Data Source=feedback_bot.db";
         Console.WriteLine(@"connectionString = " + connectionString);
         return new(builder
-            .UseNpgsql(connectionString)
+            .UseSqlite(connectionString)
             .Options);
     }
 }

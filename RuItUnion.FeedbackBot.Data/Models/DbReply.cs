@@ -15,7 +15,7 @@ public class DbReply : IEntityTypeConfiguration<DbReply>, IEquatable<DbReply>
         entity.HasKey(x => x.ChatMessageId);
         entity.Property(x => x.ChatMessageId).ValueGeneratedNever();
 
-        entity.Property(x => x.Version).IsRowVersion();
+        entity.Property(x => x.Version).IsConcurrencyToken();
 
         entity.HasOne(x => x.Topic).WithMany(x => x.Replies).HasForeignKey(x => x.ChatThreadId).IsRequired()
             .OnDelete(DeleteBehavior.Cascade).HasPrincipalKey(x => x.ThreadId);

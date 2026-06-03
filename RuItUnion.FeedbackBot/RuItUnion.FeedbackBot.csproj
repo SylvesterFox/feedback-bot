@@ -31,9 +31,7 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<PackageReference Include="Aspire.Npgsql" />
 		<PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" />
-		<PackageReference Include="Npgsql.OpenTelemetry" />
 		<PackageReference Include="OpenTelemetry.Exporter.Console" />
 		<PackageReference Include="OpenTelemetry.Exporter.OpenTelemetryProtocol" />
 		<PackageReference Include="OpenTelemetry.Extensions.Hosting" />

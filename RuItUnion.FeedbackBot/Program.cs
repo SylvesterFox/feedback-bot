@@ -1,5 +1,4 @@
 ﻿using System.Reflection;
-using Npgsql;
 using OpenTelemetry.Metrics;
 using RuItUnion.FeedbackBot.Data.Old;
 using RuItUnion.FeedbackBot.Middlewares;
@@ -28,7 +27,6 @@ builder.Services.AddOpenTelemetry().WithMetrics(providerBuilder =>
 {
     string[] metrics =
     [
-        @"Npgsql",
         @"TgBotFrame",
         @"TgBotFrame.Commands",
         @"FeedbackBot",
@@ -36,10 +34,8 @@ builder.Services.AddOpenTelemetry().WithMetrics(providerBuilder =>
 
     providerBuilder.AddInstrumentation<FrameMetricsService>();
     providerBuilder.AddInstrumentation<FeedbackMetricsService>();
-    providerBuilder.AddNpgsqlInstrumentation();
-
     providerBuilder.AddMeter(metrics);
-}).WithTracing(providerBuilder => { providerBuilder.AddNpgsql(); });
+});
 
 string tgToken = builder.Configuration.GetConnectionString(@"Telegram")
                  ?? builder.Configuration[@$"{nameof(AppOptions)}:{nameof(AppOptions.FeedbackBotToken)}"]
@@ -51,16 +47,12 @@ builder.Services.AddSingleton<ITelegramBotClient, TelegramBotClient>(provider =>
     return new(tgToken, factory.CreateClient(nameof(ITelegramBotClient)));
 });
 
-builder.AddNpgsqlDataSource(@"RuItUnion-FeedbackBot-Database", settings =>
-{
-    settings.DisableMetrics = true;
-    settings.DisableTracing = true;
-    settings.DisableHealthChecks = false;
-});
+string dbConnectionString = builder.Configuration.GetConnectionString(@"RuItUnion-FeedbackBot-Database")
+                            ?? @"Data Source=feedback_bot.db";
 
 builder.Services.AddSingleton<TopicTitleGenerator>();
 builder.Services.AddDbContext<FeedbackBotContext>((provider, optionsBuilder) =>
-    optionsBuilder.UseNpgsql(provider.GetRequiredService<NpgsqlDataSource>()));
+    optionsBuilder.UseSqlite(dbConnectionString));
 builder.Services.AddScoped<IFeedbackBotContext, FeedbackBotContext>();
 builder.Services.AddScoped<IAuthorizationData, FeedbackBotContext>();
 builder.Services.AddScoped<ReplyUserIdResolver, ReplyUserIdAdvancedResolver>();
@@ -70,7 +62,7 @@ bool useMigrator = !string.Equals(builder.Configuration[@"Migrator:EnableMigrato
 if (useMigrator)
 {
     builder.Services.AddDbContext<OldDatabaseContext>((provider, optionsBuilder) =>
-        optionsBuilder.UseNpgsql(provider.GetRequiredService<NpgsqlDataSource>()));
+        optionsBuilder.UseSqlite(dbConnectionString));
     builder.Services.AddScoped<Migrator>();
 }
 

@@ -7,7 +7,3 @@ services:
       published: 10000
     - target: 8443
       published: 10001  
-  database:
-    ports:
-    - target: 5432
-      published: 5432
