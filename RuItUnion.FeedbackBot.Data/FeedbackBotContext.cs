@@ -20,22 +20,21 @@ public class FeedbackBotContext(DbContextOptions<FeedbackBotContext> options) : 
     {
         base.OnModelCreating(modelBuilder);
 
-        modelBuilder.HasDefaultSchema("FeedbackBot");
-
         modelBuilder.Entity<DbRole>().HasData([
-            new()
+            new
             {
                 Name = "service_admin",
                 Id = -50,
                 MentionEnabled = false,
+                Version = 0u,
             },
         ]);
 
         IAuthorizationData.OnModelCreating(modelBuilder);
-        modelBuilder.Entity<DbRole>(builder => { builder.Property<uint>("Version").IsRowVersion(); });
-        modelBuilder.Entity<DbRoleMember>(builder => { builder.Property<uint>("Version").IsRowVersion(); });
-        modelBuilder.Entity<DbBan>(builder => { builder.Property<uint>("Version").IsRowVersion(); });
-        modelBuilder.Entity<DbUser>(builder => { builder.Property<uint>("Version").IsRowVersion(); });
+        modelBuilder.Entity<DbRole>(builder => { builder.Property<uint>("Version").IsConcurrencyToken().HasDefaultValue(0u); });
+        modelBuilder.Entity<DbRoleMember>(builder => { builder.Property<uint>("Version").IsConcurrencyToken().HasDefaultValue(0u); });
+        modelBuilder.Entity<DbBan>(builder => { builder.Property<uint>("Version").IsConcurrencyToken().HasDefaultValue(0u); });
+        modelBuilder.Entity<DbUser>(builder => { builder.Property<uint>("Version").IsConcurrencyToken().HasDefaultValue(0u); });
 
         modelBuilder.ApplyConfigurationsFromAssembly(typeof(FeedbackBotContext).Assembly);
     }

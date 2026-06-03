@@ -20,7 +20,7 @@ public class DbTopic : IEntityTypeConfiguration<DbTopic>, IEquatable<DbTopic>
         entity.Property(x => x.ThreadId);
         entity.Property(x => x.UserChatId);
         entity.Property(x => x.IsOpen);
-        entity.Property(x => x.Version).IsRowVersion();
+        entity.Property(x => x.Version).IsConcurrencyToken();
 
         entity.HasIndex(x => x.UserChatId).IsUnique();
         entity.HasIndex(x => x.ThreadId).IsUnique();

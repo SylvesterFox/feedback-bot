@@ -23,7 +23,11 @@ ARG BUILD_CONFIGURATION=Release
 RUN dotnet publish "./RuItUnion.FeedbackBot.csproj" -c $BUILD_CONFIGURATION -o /app/publish /p:UseAppHost=false
 
 FROM base AS final
+USER root
 WORKDIR /app
+RUN apk add --no-cache curl
 COPY --from=publish /app/publish .
+RUN mkdir -p /app/data && chown -R $APP_UID:$APP_UID /app/data
+USER $APP_UID
 HEALTHCHECK --interval=30s --timeout=10s CMD curl -f http://localhost:8080/health || exit 1 
 ENTRYPOINT ["dotnet", "RuItUnion.FeedbackBot.dll"]

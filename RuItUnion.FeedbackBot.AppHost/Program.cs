@@ -3,10 +3,7 @@
 IDistributedApplicationBuilder builder = DistributedApplication.CreateBuilder(args);
 
 IResourceBuilder<IResourceWithConnectionString> tg = builder.AddConnectionString("Telegram");
-
-IResourceBuilder<PostgresServerResource> db = builder.AddPostgres("RuItUnion-FeedbackBot-Database")
-    .WithDataVolume("RuItUnion-FeedbackBot-Database-Data")
-    .WithImageTag("17-alpine");
+IResourceBuilder<IResourceWithConnectionString> db = builder.AddConnectionString("RuItUnion-FeedbackBot-Database");
 
 builder.AddProject<RuItUnion_FeedbackBot>("RuItUnion-FeedbackBot")
     .WithReference(db).WithReference(tg)
